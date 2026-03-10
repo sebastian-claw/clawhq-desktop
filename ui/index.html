@@ -5,9 +5,7 @@
   <title>CLAWCOM</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #111; color: #eee; font-family: system-ui, sans-serif; }
-    #app-frame { position: fixed; inset: 0; width: 100%; height: 100%; border: none; display: none; }
-    #settings-wrap { display: flex; align-items: center; justify-content: center; height: 100vh; }
+    body { background: #111; color: #eee; font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
     .card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 32px; width: 380px; }
     .logo { font-size: 22px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; color: #fff; }
     .sub { font-size: 13px; color: #888; margin-bottom: 24px; }
@@ -15,72 +13,68 @@
     input { width: 100%; background: #111; border: 1px solid #444; border-radius: 6px; color: #eee; font-size: 14px; padding: 10px 12px; outline: none; }
     input:focus { border-color: #666; }
     .row { display: flex; gap: 8px; margin-top: 16px; }
-    button { flex: 1; padding: 10px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    button { flex: 1; padding: 10px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
     .btn-primary { background: #4f46e5; color: #fff; }
     .btn-primary:hover { background: #4338ca; }
     .btn-secondary { background: #333; color: #ccc; }
     .btn-secondary:hover { background: #444; }
     .hint { font-size: 11px; color: #555; margin-top: 10px; }
+    .error { font-size: 12px; color: #f87171; margin-top: 8px; display: none; }
   </style>
 </head>
 <body>
-  <iframe id="app-frame" allow="clipboard-read; clipboard-write"></iframe>
-
-  <div id="settings-wrap" style="display:none">
-    <div class="card">
-      <div class="logo">⬡ CLAWCOM</div>
-      <div class="sub">Enter your server address to connect</div>
-      <label>Server URL</label>
-      <input id="url-input" type="text" placeholder="http://100.123.154.91:3001" />
-      <div class="row">
-        <button class="btn-primary" onclick="connect()">Connect</button>
-        <button class="btn-secondary" onclick="reset()">Reset</button>
-      </div>
-      <div class="hint">URL is saved locally on this device</div>
+  <div class="card">
+    <div class="logo">⬡ CLAWCOM</div>
+    <div class="sub">Enter your server address to connect</div>
+    <label>Server URL</label>
+    <input id="url-input" type="text" placeholder="http://100.123.154.91:3001" />
+    <div class="error" id="error-msg"></div>
+    <div class="row">
+      <button class="btn-primary" id="connect-btn" onclick="connect()">Connect</button>
     </div>
+    <div class="hint">URL is saved on this device for future launches</div>
   </div>
 
   <script>
-    const KEY = 'clawcom_server_url';
-    const frame = document.getElementById('app-frame');
-    const settingsWrap = document.getElementById('settings-wrap');
+    const invoke = window.__TAURI__?.core?.invoke || window.__TAURI_INTERNALS__?.invoke;
 
-    function showSettings() {
-      const saved = localStorage.getItem(KEY) || 'http://100.123.154.91:3001';
-      document.getElementById('url-input').value = saved;
-      frame.style.display = 'none';
-      settingsWrap.style.display = 'flex';
+    async function init() {
+      if (invoke) {
+        const saved = await invoke('get_server_url');
+        if (saved) document.getElementById('url-input').value = saved;
+      }
     }
 
-    function connect() {
+    async function connect() {
       const url = document.getElementById('url-input').value.trim();
       if (!url) return;
-      localStorage.setItem(KEY, url);
-      settingsWrap.style.display = 'none';
-      frame.src = url;
-      frame.style.display = 'block';
+
+      const btn = document.getElementById('connect-btn');
+      btn.textContent = 'Connecting…';
+      btn.disabled = true;
+
+      try {
+        if (invoke) {
+          await invoke('save_server_url', { url });
+          await invoke('navigate_to', { url });
+        } else {
+          // Fallback (browser preview)
+          window.location = url;
+        }
+      } catch (e) {
+        const err = document.getElementById('error-msg');
+        err.textContent = 'Error: ' + e;
+        err.style.display = 'block';
+        btn.textContent = 'Connect';
+        btn.disabled = false;
+      }
     }
 
-    function reset() {
-      localStorage.removeItem(KEY);
-      document.getElementById('url-input').value = 'http://100.123.154.91:3001';
-    }
-
-    // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'r') { e.preventDefault(); if (frame.src) frame.src = frame.src; }
-      if (e.key === 'F5') { e.preventDefault(); if (frame.src) frame.src = frame.src; }
-      if ((e.metaKey || e.ctrlKey) && e.key === ',') { e.preventDefault(); showSettings(); }
+    document.getElementById('url-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') connect();
     });
 
-    // On load: connect immediately if URL is saved, otherwise show settings
-    const stored = localStorage.getItem(KEY);
-    if (stored) {
-      frame.src = stored;
-      frame.style.display = 'block';
-    } else {
-      showSettings();
-    }
+    init();
   </script>
 </body>
 </html>
