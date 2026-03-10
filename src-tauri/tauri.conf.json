@@ -34,11 +34,7 @@
             "icons/icon.png"
         ],
         "macOS": {
-            "infoPlist": {
-                "NSAppTransportSecurity": {
-                    "NSAllowsArbitraryLoads": true
-                }
-            }
+            "infoPlist": "./Info.plist"
         }
     }
 }
