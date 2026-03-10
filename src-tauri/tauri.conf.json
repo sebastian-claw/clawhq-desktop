@@ -1,5 +1,5 @@
 {
-  "productName": "ClawHQ",
+  "productName": "CLAWCOM",
   "version": "0.1.0",
   "identifier": "ai.clawhq.desktop",
   "build": {
@@ -8,7 +8,7 @@
   "app": {
     "windows": [
       {
-        "title": "ClawHQ",
+        "title": "CLAWCOM",
         "url": "http://100.123.154.91:3001",
         "width": 1280,
         "height": 800,
