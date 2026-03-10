@@ -9,7 +9,7 @@
     "windows": [
       {
         "title": "ClawHQ",
-        "url": "http://192.168.1.156:3001",
+        "url": "http://100.123.154.91:3001",
         "width": 1280,
         "height": 800,
         "minWidth": 900,

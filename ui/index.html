@@ -1,1 +1,24 @@
-<!DOCTYPE html><html><body><script>window.location="http://192.168.1.156:3001"</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>CLAWCOM</title>
+  <style>body{margin:0;background:#111;}</style>
+  <script>
+    // Cmd+R / Ctrl+R / F5 reloads the app
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
+        e.preventDefault();
+        window.location.reload();
+      }
+      if (e.key === 'F5') {
+        e.preventDefault();
+        window.location.reload();
+      }
+    });
+  </script>
+</head>
+<body>
+  <script>window.location = "http://192.168.1.156:3001";</script>
+</body>
+</html>
