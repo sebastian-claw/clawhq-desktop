@@ -9,7 +9,6 @@
         "windows": [
             {
                 "title": "CLAWCOM",
-                "url": "http://100.123.154.91:3001",
                 "width": 1280,
                 "height": 800,
                 "minWidth": 900,
