@@ -56,7 +56,7 @@
       try {
         if (invoke) {
           await invoke('save_server_url', { url });
-          await invoke('navigate_to', { url });
+          invoke('navigate_to', { url }); // fire-and-forget — page navigates away, response never returns
         } else {
           // Fallback (browser preview)
           window.location = url;
