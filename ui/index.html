@@ -74,6 +74,15 @@
       if (e.key === 'Enter') connect();
     });
 
+    // Cmd+, or Ctrl+, resets to settings from anywhere (in case of white screen)
+    document.addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === ',') {
+        document.getElementById('connect-btn').textContent = 'Connect';
+        document.getElementById('connect-btn').disabled = false;
+        document.getElementById('error-msg').style.display = 'none';
+      }
+    });
+
     init();
   </script>
 </body>

@@ -32,6 +32,13 @@
             "icons/256x256.png",
             "icons/512x512.png",
             "icons/icon.png"
-        ]
+        ],
+        "macOS": {
+            "infoPlist": {
+                "NSAppTransportSecurity": {
+                    "NSAllowsArbitraryLoads": true
+                }
+            }
+        }
     }
 }
