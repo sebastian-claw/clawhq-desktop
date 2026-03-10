@@ -25,7 +25,7 @@ fn save_server_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
 
 #[tauri::command]
 fn navigate_to(window: tauri::WebviewWindow, url: String) -> Result<(), String> {
-    let parsed: url::Url = url.parse().map_err(|e: url::ParseError| e.to_string())?;
+    let parsed = tauri::Url::parse(&url).map_err(|e| e.to_string())?;
     window.navigate(parsed).map_err(|e| e.to_string())?;
     Ok(())
 }
@@ -35,9 +35,8 @@ pub fn run() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![get_server_url, save_server_url, navigate_to])
         .setup(|app| {
-            // If we have a saved URL, navigate straight to it
             if let Some(url_str) = saved_url(&app.handle()) {
-                if let Ok(parsed) = url_str.parse::<url::Url>() {
+                if let Ok(parsed) = tauri::Url::parse(&url_str) {
                     if let Some(window) = app.get_webview_window("main") {
                         let _ = window.navigate(parsed);
                     }
